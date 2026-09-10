@@ -11,11 +11,23 @@ services:
     image: peilige:latest
     ports:
       # The only real host-specific knob. Defaults to 8080; override via
-      # deploy/.env (see deploy/.env.example).
-      - "${PEILIGE_PORT:-8080}:80"
+      # deploy/.env (see deploy/.env.example). The container's internal
+      # port is also 8080 — it runs unprivileged (non-root, no caps).
+      - "${PEILIGE_PORT:-8080}:8080"
+    # Least privilege: no privilege escalation, no capabilities (the site
+    # binds :8080, so even NET_BIND_SERVICE is unnecessary), and a read-only
+    # root filesystem — Caddy's writable dirs (/config, /data) are tmpfs.
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /config
+      - /data
     healthcheck:
       # wget ships with the base image — nothing installed for this.
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/healthz"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
       interval: 30s
       timeout: 3s
       retries: 3

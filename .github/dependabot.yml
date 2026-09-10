@@ -1,0 +1,17 @@
+# Peilige dependency updates. The project has exactly two real dependency
+# surfaces — the Docker base image (deploy/Dockerfile) and the GitHub
+# Actions used by CI. Nothing else (no npm, no pip, no other package
+# manager) participates in this repository.
+version: 2
+updates:
+  - package-ecosystem: docker
+    directory: /deploy
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
