@@ -1,4 +1,4 @@
-# Peilige
+# Peilige（培黎阁）
 
 北京培黎职业学院 Peili 系列网站的统一导航入口。
 
@@ -10,6 +10,11 @@ Peilige 是一个纯静态导航页，汇总 Peili 系列已上线网站的入�
 - **Peilike** — 课程表
 
 技术栈：HTML + CSS + Vanilla JavaScript。无 npm 依赖，无构建步骤，无后端。
+
+## 相关项目
+
+- Peiligo 项目仓库：<https://github.com/luehunnie/peiligo>
+- Peilike 项目仓库：<https://github.com/luehunnie/peilike>
 
 ## 快速开始
 
@@ -81,6 +86,18 @@ PEILIGE_PORT=18080 docker compose -f deploy/docker-compose.yml up -d --build
 ```
 
 或使用配置文件：复制 `deploy/.env.example` 为 `deploy/.env`，修改其中的 `PEILIGE_PORT=...`，之后正常执行上面的启动命令即可。
+
+## 部署状态
+
+| 项目 | 状态 |
+| --- | --- |
+| 应用开发 | ✅ 完成 |
+| Docker / Caddy 部署封装 | ✅ 完成 |
+| 本地容器构建与运行验证 | ✅ 完成 |
+| 测试生产环境部署 | ⏳ 待部署负责人执行 |
+| 正式生产环境部署 | ⏳ 待部署负责人执行 |
+
+应用级 Docker/Caddy 部署封装已完成，并已通过本地构建和运行验证。测试生产环境与正式生产环境的基础设施架设及实际部署，由后续部署负责人完成，目前不属于本仓库开发完成状态。
 
 ## 工程结构
 
