@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Obsidian local vault metadata
+.obsidian/
+**/.obsidian/
+
+# Obsidian local trash
+.trash/
+**/.trash/
+
+# Local AI workspace — NEVER COMMIT
+docs/ai/
+
+# Playwright CLI local session artifacts — NEVER COMMIT
+.playwright-cli/

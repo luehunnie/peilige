@@ -1,0 +1,681 @@
+/* ============================================================
+   Peilige 视觉样式
+   方向：明亮 / 青春 / 清爽 / 功能优先。
+   唯一品牌母题「入口彩条」：蓝→薄荷绿双色小条，
+   出现在字标下划线、每张卡片顶边、Modal 顶边（统一，不按站点配色）。
+   背景装饰全部静态，无任何循环动画。
+   ============================================================ */
+
+:root {
+  /* 色板 */
+  --page-bg: #f4f8fb;
+  --surface: #ffffff;
+  --surface-muted: #eaf2fb;
+
+  --text-primary: #182b3c;
+  --text-body: #3d5165;
+  --text-secondary: #55708a;
+
+  --accent: #2e7ce4;      /* 图形 / 装饰 / hover 边框 */
+  --accent-ink: #1b5fc4;  /* 彩色文字 / 主按钮背景（对比度更高） */
+  --accent-2: #2fae8b;    /* 仅装饰：彩条渐变第二色 */
+
+  --border: #d8e4ef;
+  --border-soft: #e7eef5;
+
+  --gradient-brand: linear-gradient(90deg, var(--accent), var(--accent-2));
+
+  /* 阴影 */
+  --shadow-card: 0 1px 2px rgba(24, 43, 60, 0.04), 0 10px 30px -22px rgba(24, 43, 60, 0.3);
+  --shadow-card-hover: 0 14px 32px -18px rgba(27, 95, 196, 0.35);
+  --shadow-modal: 0 24px 64px -24px rgba(24, 43, 60, 0.38);
+
+  /* 圆角 / 布局 */
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+  --content-width: 1040px;
+
+  /* Modal 内边距（顶边彩条的负边距依赖这两个值） */
+  --dialog-pad-x: 28px;
+  --dialog-pad-y: 30px;
+}
+
+/* ---------- 基础 ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei",
+    "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+  color: var(--text-primary);
+  background: var(--page-bg);
+  line-height: 1.6;
+}
+
+/* 内容不足一屏时仍让 footer 落到视口底部。
+   注意：body 为 flex column，此处必须显式 width: 100%，
+   否则 auto 边距会使 flex 项 shrink-to-fit，内容容器被压窄。 */
+main.content {
+  flex: 1;
+  width: 100%;
+}
+
+.content {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* 内容层级整体压过背景装饰 */
+.site-header,
+main.content,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--surface-muted);
+}
+
+/* ---------- 静态背景装饰 ---------- */
+
+.page-decor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 640px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-decor span {
+  position: absolute;
+  display: block;
+}
+
+.page-decor__glow {
+  border-radius: 50%;
+}
+
+.page-decor__glow--a {
+  top: -220px;
+  left: -160px;
+  width: 560px;
+  height: 560px;
+  background: radial-gradient(closest-side, rgba(46, 124, 228, 0.16), transparent);
+}
+
+.page-decor__glow--b {
+  top: -180px;
+  right: -140px;
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(closest-side, rgba(47, 174, 139, 0.14), transparent);
+}
+
+.page-decor__dots {
+  top: 150px;
+  right: 48px;
+  width: 260px;
+  height: 200px;
+  background-image: radial-gradient(circle, rgba(46, 124, 228, 0.35) 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
+  -webkit-mask-image: radial-gradient(closest-side, #000, transparent);
+  mask-image: radial-gradient(closest-side, #000, transparent);
+  opacity: 0.55;
+}
+
+.page-decor__ring {
+  top: 100px;
+  right: 21%;
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgba(47, 174, 139, 0.42);
+  border-radius: 50%;
+}
+
+.page-decor__pill {
+  top: 218px;
+  right: 9%;
+  width: 46px;
+  height: 12px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, rgba(46, 124, 228, 0.3), rgba(47, 174, 139, 0.3));
+  transform: rotate(-8deg);
+}
+
+/* ---------- Header ---------- */
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 22px;
+  padding-bottom: 22px;
+}
+
+.site-brand {
+  margin: 0;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+/* 入口彩条 · 字标下划线 */
+.site-brand::after {
+  content: "";
+  display: block;
+  width: 34px;
+  height: 4px;
+  margin-top: 5px;
+  border-radius: 2px;
+  background: var(--gradient-brand);
+}
+
+/* 学校身份锚点：Peilige 更突出，学校归属保持次要 */
+.school-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.school-identity__name {
+  color: var(--text-secondary);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+/* Logo 插槽：资产就位后 <img class="school-identity__logo"> 直接放入，高度已固定 */
+.school-identity__logo {
+  display: block;
+  height: 26px;
+  width: auto;
+}
+
+/* ---------- Intro ---------- */
+
+.intro {
+  padding: 44px 0 40px;
+}
+
+.intro__eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent-ink);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.intro__title {
+  margin: 0 0 12px;
+  font-size: clamp(27px, 4.2vw, 40px);
+  font-weight: 800;
+  line-height: 1.22;
+  letter-spacing: 0.01em;
+}
+
+.intro__lead {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+/* ---------- Site Grid ----------
+   auto-fit 会折叠空轨道：两张卡 = 两列占满，新增站点无需改布局。 */
+
+.sites {
+  margin-bottom: 72px;
+}
+
+.site-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* ---------- 网站卡片 ---------- */
+
+.site-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 26px 26px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+/* 入口彩条 · 卡片顶边 */
+.site-card::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  height: 4px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--gradient-brand);
+}
+
+/* 主区域 hover：轻微上移 + 边框/阴影变柔（仅在真实指针悬停时） */
+@media (hover: hover) {
+  .site-card:has(.site-card__main:hover) {
+    transform: translateY(-2px);
+    border-color: #b9d3f4;
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
+/* 键盘聚焦主链接时给予与 hover 同等的视觉反馈 */
+.site-card:has(.site-card__main:focus-visible) {
+  transform: translateY(-2px);
+  border-color: #b9d3f4;
+  box-shadow: var(--shadow-card-hover);
+}
+
+.site-card__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 功能名称作为眉题置于站名之上：功能优先的信息层级（纯视觉排序） */
+.site-card__title {
+  order: -1;
+  margin: 0 0 6px;
+  color: var(--accent-ink);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.site-card__name {
+  margin: 0 0 8px;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.site-card__description {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.site-card__enter {
+  margin-top: auto;
+  padding-top: 14px;
+  color: var(--accent-ink);
+  font-size: 14px;
+  font-weight: 600;
+  transition: transform 0.18s ease;
+}
+
+.site-card__main:hover .site-card__enter {
+  transform: translateX(3px);
+}
+
+/* “了解更多”：辅助动作，不与主入口抢视觉 */
+.site-card__more {
+  align-self: flex-start;
+  min-height: 40px;
+  padding: 8px 16px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease,
+    background-color 0.15s ease, transform 0.15s ease;
+}
+
+.site-card__more:hover {
+  color: var(--accent-ink);
+  border-color: var(--accent);
+  background: var(--surface-muted);
+}
+
+.site-card__more:active {
+  transform: translateY(1px);
+}
+
+/* ---------- 详情 Modal ---------- */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 32px);
+}
+
+/* hidden 属性是唯一显隐状态，需显式压过上面的 display: flex */
+.modal[hidden] {
+  display: none;
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(24, 43, 60, 0.44);
+  animation: peilige-fade 0.2s ease-out;
+}
+
+.modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 520px;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--dialog-pad-y) var(--dialog-pad-x) 26px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 20px;
+  box-shadow: var(--shadow-modal);
+  animation: peilige-rise 0.24s ease-out;
+}
+
+/* 入口彩条 · Modal 顶边：sticky 使长内容滚动时品牌条保持可见；
+   底部留出 28px 顶部安全区，Header（标题 + 关闭按钮）整体位于彩条之下，
+   与圆角、彩条互不争抢空间 */
+.modal__dialog::before {
+  content: "";
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: block;
+  height: 4px;
+  margin: calc(-1 * var(--dialog-pad-y)) calc(-1 * var(--dialog-pad-x)) 28px;
+  border-radius: 20px 20px 0 0;
+  background: var(--gradient-brand);
+}
+
+/* Header 双列 Grid：标题列 minmax(0,1fr) 可收缩折行，关闭按钮独立占位，
+   结构上保证标题 / 副标题永远不会与关闭按钮相交 */
+.modal__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 16px;
+  align-items: start;
+  margin-bottom: 20px;
+}
+
+.modal__heading {
+  min-width: 0;
+}
+
+.modal__close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.modal__close:hover {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+}
+
+.modal__title {
+  margin: 0 0 6px;
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.modal__subtitle {
+  margin: 0;
+  color: var(--accent-ink);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.modal__detail {
+  margin: 0 0 8px;
+  color: var(--text-body);
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.modal__features-heading {
+  margin: 18px 0 6px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.modal__features {
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.modal__features li {
+  position: relative;
+  padding: 5px 0 5px 20px;
+  color: var(--text-body);
+  font-size: 15px;
+}
+
+.modal__features li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.85em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gradient-brand);
+}
+
+.modal__actions {
+  margin-top: 16px;
+}
+
+.modal__enter {
+  display: inline-block;
+  padding: 11px 22px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  background: var(--accent-ink);
+  border-radius: var(--radius-md);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.modal__enter:hover {
+  background: #164fa8;
+}
+
+.modal__enter:active {
+  transform: translateY(1px);
+}
+
+/* Modal 打开时锁定背景滚动，关闭路径统一在 closeModal() 中移除 */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* ---------- Modal 显隐动效（仅打开；关闭即隐，轻量） ---------- */
+
+@keyframes peilige-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes peilige-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+  margin-top: 72px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.site-footer__inner {
+  padding-top: 22px;
+  padding-bottom: 34px;
+}
+
+.site-footer p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* ---------- 手机（自然适配，不锁设备宽度） ---------- */
+
+@media (max-width: 640px) {
+  .site-header__inner {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .site-brand {
+    font-size: 21px;
+  }
+
+  .school-identity__name {
+    font-size: 12px;
+  }
+
+  .intro {
+    padding: 28px 0 30px;
+  }
+
+  .intro__eyebrow {
+    font-size: 13px;
+  }
+
+  .sites {
+    margin-bottom: 56px;
+  }
+
+  .site-grid {
+    gap: 16px;
+  }
+
+  .site-card {
+    padding: 22px 20px 18px;
+  }
+
+  .site-card__name {
+    font-size: 23px;
+  }
+
+  .site-footer {
+    margin-top: 56px;
+  }
+
+  /* 小屏收起两件小装饰，保留柔光即可
+     （选择器带 .page-decor 前缀以压过 `.page-decor span` 的 display: block） */
+  .page-decor .page-decor__ring,
+  .page-decor .page-decor__pill {
+    display: none;
+  }
+
+  .page-decor__dots {
+    top: 120px;
+    right: -40px;
+    opacity: 0.4;
+  }
+
+  :root {
+    --dialog-pad-x: 20px;
+    --dialog-pad-y: 24px;
+  }
+
+  .modal__dialog {
+    border-radius: 16px;
+  }
+
+  .modal__dialog::before {
+    margin-bottom: 24px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .modal__header {
+    column-gap: 12px;
+  }
+
+  .modal__title {
+    font-size: 21px;
+  }
+}
+
+/* ---------- 减弱动效 ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .site-card:has(.site-card__main:hover),
+  .site-card:has(.site-card__main:focus-visible),
+  .site-card__main:hover .site-card__enter,
+  .site-card__more:active,
+  .modal__enter:active {
+    transform: none;
+  }
+}
