@@ -1,0 +1,15 @@
+# Version control & local metadata
+.git
+.gitignore
+.dockerignore
+.DS_Store
+
+# Not part of the runtime image (docs, PRD, Playwright evidence)
+docs
+.playwright-cli
+README.md
+LICENSE
+
+# Compose-local overrides must never enter the build context.
+# NOTE: deploy/ itself must stay in the context — deploy/Caddyfile is COPYed.
+deploy/.env

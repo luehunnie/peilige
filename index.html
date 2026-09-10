@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#F4F8FB">
+  <!-- 本地 data-URI favicon：入口彩条同款渐变圆角方块，避免 404，无外部依赖 -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232E7CE4'/%3E%3Cstop offset='1' stop-color='%232FAE8B'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3C/svg%3E">
+  <title>Peilige — 培黎系列网站导航</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 静态背景装饰：纯视觉元素，不承载内容，pointer-events 关闭 -->
+  <div class="page-decor" aria-hidden="true">
+    <span class="page-decor__glow page-decor__glow--a"></span>
+    <span class="page-decor__glow page-decor__glow--b"></span>
+    <span class="page-decor__dots"></span>
+    <span class="page-decor__ring"></span>
+    <span class="page-decor__pill"></span>
+  </div>
+
+  <header class="site-header">
+    <div class="content site-header__inner">
+      <p class="site-brand">Peilige</p>
+      <!-- 学校身份锚点：归属信息保持次要，Peilige 字标为主视觉 -->
+      <div class="school-identity">
+        <img class="school-identity__logo" src="assets/logo/bjpl-logo.png" alt="北京培黎职业学院校徽">
+        <span class="school-identity__name">北京培黎职业学院</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="intro">
+      <p class="intro__eyebrow">Peilige</p>
+      <h1 class="intro__title">培黎阁</h1>
+      <p class="intro__lead">了解培黎从这里开始</p>
+    </section>
+
+    <section class="sites" aria-label="网站列表">
+      <div id="site-grid"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="content site-footer__inner">
+      <p>Peilige · 北京培黎职业学院 Peili 系列网站</p>
+    </div>
+  </footer>
+
+  <!-- 全局唯一详情 Modal：内容由 main.js 从 sites.js 数据动态填充，所有卡片复用 -->
+  <div id="site-modal" class="modal" hidden>
+    <div class="modal__backdrop"></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="site-modal-title">
+      <!-- Header 双列 Grid：标题列 minmax(0,1fr) 天然与关闭按钮隔离，长标题折行而非碰撞 -->
+      <header class="modal__header">
+        <div class="modal__heading">
+          <h2 id="site-modal-title" class="modal__title"></h2>
+          <p id="site-modal-subtitle" class="modal__subtitle"></p>
+        </div>
+        <button id="site-modal-close" class="modal__close" type="button" aria-label="关闭详情">&times;</button>
+      </header>
+      <p id="site-modal-detail" class="modal__detail"></p>
+      <h3 class="modal__features-heading">主要功能</h3>
+      <ul id="site-modal-features" class="modal__features"></ul>
+      <div class="modal__actions">
+        <a id="site-modal-enter" class="modal__enter" target="_blank" rel="noopener noreferrer">进入网站</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/sites.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

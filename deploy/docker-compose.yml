@@ -1,0 +1,23 @@
+# Peilige V1 — independent static production stack.
+# One Caddy container serving the static site. No database, no backend,
+# no data volumes, no orchestration with other sites.
+name: peilige
+
+services:
+  peilige:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: peilige:latest
+    ports:
+      # The only real host-specific knob. Defaults to 8080; override via
+      # deploy/.env (see deploy/.env.example).
+      - "${PEILIGE_PORT:-8080}:80"
+    healthcheck:
+      # wget ships with the base image — nothing installed for this.
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped

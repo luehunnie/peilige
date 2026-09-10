@@ -1,0 +1,113 @@
+# Peilige V1 — minimal CI.
+# Verifies key files, JS syntax, static HTTP serving, Docker build,
+# container /healthz and compose config. No npm, no build toolchain —
+# the site is vanilla HTML/CSS/JS and stays that way.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    name: Static checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Key files exist
+        run: |
+          for f in \
+            index.html \
+            css/style.css \
+            js/sites.js \
+            js/main.js \
+            assets/logo/bjpl-logo.png \
+            deploy/Dockerfile \
+            deploy/docker-compose.yml \
+            deploy/Caddyfile \
+            README.md \
+            docs/product/01_Peilige_PRD.md; do
+            test -f "$f" || { echo "missing key file: $f"; exit 1; }
+            echo "ok: $f"
+          done
+
+      - name: JS syntax check
+        run: |
+          node --check js/sites.js
+          node --check js/main.js
+
+      - name: index.html references its assets
+        run: |
+          for ref in css/style.css js/sites.js js/main.js; do
+            grep -q "$ref" index.html || { echo "index.html does not reference $ref"; exit 1; }
+            echo "ok: index.html references $ref"
+          done
+
+      - name: Static HTTP smoke test
+        run: |
+          cleanup() { kill "$SERVER_PID" 2>/dev/null || true; }
+          trap cleanup EXIT
+
+          python3 -m http.server 8000 --bind 127.0.0.1 &
+          SERVER_PID=$!
+
+          ready=0
+          for _ in $(seq 1 30); do
+            if curl -fsS -o /dev/null http://127.0.0.1:8000/; then
+              ready=1
+              break
+            fi
+            sleep 0.5
+          done
+          if [ "$ready" -ne 1 ]; then
+            echo "static server did not become ready"
+            exit 1
+          fi
+
+          for path in / /css/style.css /js/sites.js /js/main.js /assets/logo/bjpl-logo.png; do
+            curl -fsS -o /dev/null -w "GET $path -> %{http_code}\n" "http://127.0.0.1:8000$path"
+          done
+
+  docker-checks:
+    name: Docker checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -f deploy/Dockerfile -t peilige-ci .
+
+      - name: Container smoke test
+        run: |
+          cleanup() { docker rm -f peilige-ci >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+
+          docker run -d --name peilige-ci -p 18080:80 peilige-ci
+
+          ready=0
+          for _ in $(seq 1 30); do
+            if curl -fsS -o /dev/null http://127.0.0.1:18080/healthz; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then
+            echo "container did not become ready"
+            exit 1
+          fi
+
+          for path in / /healthz /assets/logo/bjpl-logo.png; do
+            curl -fsS -o /dev/null -w "GET $path -> %{http_code}\n" "http://127.0.0.1:18080$path"
+          done
+
+      - name: Compose config validation
+        run: docker compose -f deploy/docker-compose.yml config -q

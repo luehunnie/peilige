@@ -1,0 +1,39 @@
+# Peilige V1 — production Caddyfile (pure static site).
+# Domain-neutral: listens on :80; hostname/TLS is decided at deploy time
+# by surrounding infrastructure, never hardcoded here.
+
+:80
+
+root * /srv
+
+# zstd preferred, gzip fallback
+encode zstd gzip
+
+# Minimal, low-risk headers (applied to every response; separate fields,
+# so no interaction with the Cache-Control routes below).
+header {
+	-Server
+	X-Content-Type-Options nosniff
+}
+
+# Cache policy. The three matchers below are deliberately MUTUALLY
+# EXCLUSIVE so the resulting header never depends on directive ordering.
+#
+# Static assets: medium cache. Filenames are NOT content-hashed, so a long
+# immutable lifetime would serve stale CSS/JS after an update. 24h with
+# must-revalidate balances reuse against freshness.
+@static path /css/* /js/* /assets/*
+header @static Cache-Control "public, max-age=86400, must-revalidate"
+
+# Liveness: answered by Caddy itself, never cached.
+@healthz path /healthz
+header @healthz Cache-Control "no-store"
+
+# Everything else — index.html above all — always revalidate so deploys
+# are picked up immediately.
+@revalidate not path /css/* /js/* /assets/* /healthz
+header @revalidate Cache-Control "no-cache"
+
+respond /healthz "ok" 200
+
+file_server
