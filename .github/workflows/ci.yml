@@ -125,8 +125,10 @@ jobs:
             exit 1
           fi
 
-      - name: Security header regression
-        run: |
+          # Security header regression. Asserted inside this same step so
+          # every check against the live peilige-ci container shares one
+          # shell lifetime — the EXIT trap removes the container when the
+          # step ends, so a later step would find nothing to curl.
           BASE=http://127.0.0.1:18080
 
           headers=$(curl -sSI "$BASE/")
