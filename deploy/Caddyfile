@@ -1,19 +1,37 @@
 # Peilige V1 — production Caddyfile (pure static site).
-# Domain-neutral: listens on :80; hostname/TLS is decided at deploy time
-# by surrounding infrastructure, never hardcoded here.
+# Domain-neutral: listens on :8080 (unprivileged — the container runs as a
+# non-root user, see deploy/Dockerfile); hostname/TLS is decided at deploy
+# time by surrounding infrastructure, never hardcoded here.
 
-:80
+:8080
 
 root * /srv
 
 # zstd preferred, gzip fallback
 encode zstd gzip
 
-# Minimal, low-risk headers (applied to every response; separate fields,
+# Security + cache headers (applied to every response; separate fields,
 # so no interaction with the Cache-Control routes below).
 header {
+	# Server identity hidden.
 	-Server
+	# No MIME sniffing.
 	X-Content-Type-Options nosniff
+	# Clickjacking: legacy + modern equivalent, both on purpose.
+	X-Frame-Options DENY
+	Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; media-src 'none'; worker-src 'none'"
+	# Minimal referrer leakage on cross-origin navigations.
+	Referrer-Policy strict-origin-when-cross-origin
+	# The site uses none of these browser capabilities — deny them all.
+	Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+	# NOTE: Strict-Transport-Security is deliberately NOT set here. HSTS must
+	# be enabled by the real HTTPS/TLS entrypoint after domain ownership is
+	# confirmed — see SECURITY.md (Infrastructure Responsibilities).
+	#
+	# CSP notes (policy is derived from the actual page, keep it that way):
+	#   - no inline <script>/<style> exists in index.html → no unsafe-inline
+	#   - img-src data: is required only for the inline SVG data-URI favicon
+	#   - CSS uses system fonts only → no font-src needed
 }
 
 # Cache policy. The three matchers below are deliberately MUTUALLY

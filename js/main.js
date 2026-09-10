@@ -8,6 +8,22 @@
     return Array.isArray(window.PEILIGE_SITES) ? window.PEILIGE_SITES : [];
   }
 
+  // 外链安全闸门：公网产品只放行 https: 链接。
+  // sites.js 即使被误维护成 javascript: / data: / file: / http: 等值，
+  // 也不会被赋给 href —— 返回 null 时调用方移除 href，链接退化为
+  // 不可跳转的占位，不弹错误 UI。
+  function safeUrl(url) {
+    if (typeof url !== 'string') {
+      return null;
+    }
+    try {
+      var parsed = new URL(url);
+      return parsed.protocol === 'https:' ? parsed.href : null;
+    } catch (err) {
+      return null;
+    }
+  }
+
   // 生成单张网站卡片。
   // 结构：article.site-card 下平级放置主链接与“了解更多”按钮，
   // 交互元素互不嵌套。
@@ -17,7 +33,10 @@
 
     var mainLink = document.createElement('a');
     mainLink.className = 'site-card__main';
-    mainLink.href = site.url;
+    var cardUrl = safeUrl(site.url);
+    if (cardUrl !== null) {
+      mainLink.href = cardUrl;
+    }
     mainLink.target = '_blank';
     mainLink.rel = 'noopener noreferrer';
 
@@ -105,7 +124,12 @@
     });
     modalFeatures.replaceChildren(items);
 
-    modalEnter.setAttribute('href', site.url);
+    var modalUrl = safeUrl(site.url);
+    if (modalUrl !== null) {
+      modalEnter.setAttribute('href', modalUrl);
+    } else {
+      modalEnter.removeAttribute('href');
+    }
   }
 
   function openModal(site, trigger) {

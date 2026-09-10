@@ -87,6 +87,10 @@ PEILIGE_PORT=18080 docker compose -f deploy/docker-compose.yml up -d --build
 
 或使用配置文件：复制 `deploy/.env.example` 为 `deploy/.env`，修改其中的 `PEILIGE_PORT=...`，之后正常执行上面的启动命令即可。
 
+## 安全
+
+见 [SECURITY.md](SECURITY.md)。应用侧已完成基础公网安全加固（CSP、安全响应头、外链 scheme 校验、Docker 非 root 最小权限）；真实 HTTPS / TLS / 域名 / 防火墙由部署负责人配置。
+
 ## 部署状态
 
 | 项目 | 状态 |
@@ -130,4 +134,5 @@ peilige/
 - 静态页面可通过 HTTP 正常访问（含 Logo）
 - Docker 镜像可以构建
 - 容器内 `/`、`/healthz`、Logo 均返回 200
+- 容器以非 root 运行，安全响应头（CSP 等）在位、`Server` 头隐藏、`/healthz` 不缓存
 - `docker compose` 配置有效
