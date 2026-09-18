@@ -74,6 +74,22 @@ README、docs、deploy、仓库元数据**不会**被发布。`_headers`（安�
 ## 与生产 Caddy 的行为差异
 
 - HTML 页面默认 `Cache-Control: public, max-age=0, must-revalidate`（本地
-  `wrangler dev` 实测），效果与生产 Caddyfile 的 `no-cache` 等同：更新立即生效；
-  `/css/*`、`/js/*`、`/assets/*` 的 24h 缓存策略已通过 `_headers` 显式对齐。
+  `wrangler dev` 与线上实测一致），效果与生产 Caddyfile 的 `no-cache` 等同：
+  更新立即生效；`/css/*`、`/js/*`、`/assets/*` 的 24h 缓存策略已通过
+  `_headers` 显式对齐。
 - 压缩由 Cloudflare 边缘自动处理；`/healthz` 端点为 Caddy 专属，staging 不提供。
+- 响应会带 Cloudflare 边缘自动附加的 `server: cloudflare` 头（`_headers`
+  无法移除）；生产 Caddy 路径则按安全策略隐藏 `Server` 头。
+
+## 当前部署状态
+
+- 2026-09-18：staging 已首次部署并完成验证（wrangler 4.134.0）。
+- 线上地址：<https://peilige-static-staging.peilige.workers.dev>
+- 当前版本：`7b79fe37-c01b-43fd-bbed-402b7146196c`
+  （`npx wrangler versions list --name peilige-static-staging` 可查历史）
+- 已验证：`/`、静态资源、安全响应头、`/nonexistent` → 404、
+  `/_headers` 与仓库文件不外露；浏览器 1366 / 820 / 390 三档宽度渲染
+  正常、控制台零报错。
+- 网络提示：`*.workers.dev` 在中国大陆存在被干扰/SNI 阻断的公开报道，
+  首次访问偶发 TLS 握手失败、重试即恢复（2026-09-18 实测）。staging
+  域名的稳定可达性需部署负责人按实际受众评估，生产不依赖 workers.dev。
