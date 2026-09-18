@@ -15,3 +15,8 @@ docs/ai/
 
 # Playwright CLI local session artifacts — NEVER COMMIT
 .playwright-cli/
+
+# Node / wrangler local artifacts
+node_modules/
+.wrangler/
+dist-workers/

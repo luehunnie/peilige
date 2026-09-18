@@ -1,0 +1,27 @@
+// Peilige — Cloudflare Workers Static Assets 配置（仅 STAGING）。
+//
+// 这是"纯静态 assets-only Worker"配置：没有 `main` 入口，Cloudflare 不运行
+// 任何 Worker 代码，所有请求都直接命中静态资源（官方定价："Requests to
+// static assets are free and unlimited"，不占用 Workers 免费档每日请求数）。
+//
+// 边界（刻意保持）：
+//   - 不配置 D1 / R2 / KV / Queues / AI / Cron 等任何付费能力绑定
+//   - 不绑定自定义域名、不配置路由、不改 DNS
+//   - 不定义 env.production：生产部署路径仍是 deploy/ 下的 Docker + Caddy，
+//     未来若要上生产必须由人类单独决策后另行添加
+//
+// 行为说明：
+//   - html_handling 省略 → 官方默认 auto-trailing-slash
+//   - not_found_handling: "404-page" → 未命中路径返回 404 状态码 + 就近的
+//     404.html（本仓库根目录提供，由 scripts/build-workers-assets.mjs 复制）
+//   - 资源目录是构建产物 dist-workers/（白名单复制，等价于 Dockerfile 的
+//     COPY 列表），避免把 README / docs / deploy 等仓库文件发布上 CDN
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "peilige-static-staging",
+  "compatibility_date": "2026-09-17",
+  "assets": {
+    "directory": "./dist-workers",
+    "not_found_handling": "404-page"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "peilige",
+  "private": true,
+  "description": "Peilige static site tooling — wrangler is used only for Cloudflare Workers static-asset staging deploys; the site itself has no build step.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-workers-assets.mjs",
+    "dry-run": "npm run build && wrangler deploy --dry-run",
+    "deploy:staging": "npm run build && wrangler deploy",
+    "dev:staging": "npm run build && wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "4.134.0"
+  }
+}

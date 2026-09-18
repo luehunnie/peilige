@@ -9,7 +9,7 @@ Peilige 是一个纯静态导航页，汇总 Peili 系列已上线网站的入�
 - **Peiligo** — 校园资源搜索
 - **Peilike** — 课程表
 
-技术栈：HTML + CSS + Vanilla JavaScript。无 npm 依赖，无构建步骤，无后端。
+技术栈：HTML + CSS + Vanilla JavaScript。站点无运行时依赖、无构建步骤、无后端；`wrangler` 仅为可选 staging 部署工具（devDependency），不参与页面运行。
 
 ## 相关项目
 
@@ -87,6 +87,18 @@ PEILIGE_PORT=18080 docker compose -f deploy/docker-compose.yml up -d --build
 
 或使用配置文件：复制 `deploy/.env.example` 为 `deploy/.env`，修改其中的 `PEILIGE_PORT=...`，之后正常执行上面的启动命令即可。
 
+## Cloudflare Workers Staging（可选）
+
+除 Docker 生产路径外，仓库提供纯静态的 Cloudflare Workers Static Assets
+staging 通道（`*.workers.dev` 域名，Workers Free 计划，静态资源请求免费不计数，
+无任何付费能力绑定）。详见 [deploy/cloudflare-workers-staging.md](deploy/cloudflare-workers-staging.md)。
+
+```bash
+npm install            # 安装 wrangler（仅 devDependency）
+npx wrangler login     # 首次使用：交互式登录 Cloudflare
+npm run deploy:staging # 构建 + 发布 staging
+```
+
 ## 安全
 
 见 [SECURITY.md](SECURITY.md)。应用侧已完成基础公网安全加固（CSP、安全响应头、外链 scheme 校验、Docker 非 root 最小权限）；真实 HTTPS / TLS / 域名 / 防火墙由部署负责人配置。
@@ -108,11 +120,16 @@ PEILIGE_PORT=18080 docker compose -f deploy/docker-compose.yml up -d --build
 ```text
 peilige/
 ├── index.html          # 页面入口
+├── 404.html            # 404 页（Workers staging 用，生产 Caddy 不受影响）
+├── _headers            # Workers staging 安全响应头（与 Caddyfile 对齐）
 ├── assets/logo/        # 学校 Logo
 ├── css/                # 样式
 ├── js/                 # sites.js（网站数据）、main.js（页面逻辑）
 ├── docs/product/       # 产品需求文档（PRD）
-├── deploy/             # Dockerfile、docker-compose.yml、Caddyfile、.env.example
+├── deploy/             # Dockerfile、docker-compose.yml、Caddyfile、.env.example、cloudflare-workers-staging.md
+├── scripts/            # build-workers-assets.mjs（staging 发布面组装，纯复制）
+├── wrangler.jsonc      # Workers Static Assets staging 配置（无 Worker 代码）
+├── package.json        # 仅钉住 wrangler devDependency 与 npm 脚本
 └── .github/workflows/  # CI
 ```
 
