@@ -5,7 +5,7 @@
 # Caddy tag is pinned to an exact minor/patch release (verified to exist on
 # Docker Hub, digest-identical to the former caddy:2-alpine at pin time);
 # Dependabot (.github/dependabot.yml) keeps it current.
-FROM caddy:2.11.4-alpine
+FROM caddy:2.11.9-alpine
 
 # Dedicated unprivileged runtime user (uid/gid 10001). The image is pure
 # static: nothing needs root, and Caddy listens on :8080 (deploy/Caddyfile)
